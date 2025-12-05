@@ -44,5 +44,4 @@ resource "aws_lb_listener" "http" {
 # Passes the ALB DNS name and target group ARN from this module to the root module and other modules, enabling access to web 
 # application and ASG registration.
 output "alb_dns_name" { value = aws_lb.main.dns_name } 
-output "alb_dns_name" { value = aws_lb.main.dns_name }
 output "target_group_arn" { value = aws_lb_target_group.app.arn }
