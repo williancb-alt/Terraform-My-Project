@@ -18,6 +18,8 @@ resource "aws_launch_template" "app" {
   name = "app-lt"
   image_id = data.aws_ami.amazon_linux.id
   instance_type = "t3.micro"
+ # EC2 key pair to allow SSH access
+  key_name = "wcb-atu-laptop"  
   vpc_security_group_ids = [var.ec2_sg_id]
   user_data = base64encode(templatefile("${path.module}/user_data.sh", { target_group_arn = var.target_group_arn }))
 }
