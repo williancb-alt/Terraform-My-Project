@@ -1,3 +1,9 @@
+
+# It creates an Auto Scaling Group (ASG) that launches dynamic, identical EC2 instances
+# Instances are ephemeral (terminated/scaled automatically)
+# AWS will auto-generates names like i-0abcdef1234567890
+
+# This block queries the latest Amazon Linux 2023 AMI ID matching the specified criteria, avoiding hardcoded AMI IDs that change overtime
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners = ["amazon"]
@@ -7,6 +13,7 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+# Creates Launch Template called "app-lt" for EC2 instances in the ASG. Serves as a reusable blueprint for launching EC2 instancs.
 resource "aws_launch_template" "app" {
   name = "app-lt"
   image_id = data.aws_ami.amazon_linux.id
@@ -15,6 +22,8 @@ resource "aws_launch_template" "app" {
   user_data = base64encode(templatefile("${path.module}/user_data.sh", { target_group_arn = var.target_group_arn }))
 }
 
+# Creates ASG called "app" to automatically manage EC2 instances, in this case launching 2 instances across private 
+# subnets scalling up to 4 max or down to 2 min as needed. ASG integrates with the ALB target group to distribute traffic and perform health checks
 resource "aws_autoscaling_group" "app" {
   desired_capacity = 2
   max_size = 4
